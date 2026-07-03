@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import apiClient from '../api/client'
 
-const API_BASE = 'http://localhost:8000'
+
 
 function RankingDashboard() {
   const [resumes, setResumes] = useState([])
@@ -15,7 +15,7 @@ function RankingDashboard() {
 
   const fetchResumes = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/api/resumes`)
+      const response = await apiClient.get('/api/resumes')
       setResumes(response.data)
     } catch (error) {
       console.error('Failed to fetch resumes:', error)
@@ -36,13 +36,11 @@ function RankingDashboard() {
     setLoading(true)
     
     try {
-      const jdResponse = await axios.post(
-    `${API_BASE}/api/job-description`,
-    { text: jobDesc },  // Note: { text: jobDesc } not just jobDesc
-    { headers: { 'Content-Type': 'application/json' } }
-      )
-      
-      const rankResponse = await axios.post(`${API_BASE}/api/rank`, {
+      const jdResponse = await apiClient.post(
+  '/api/job-description',
+  { text: jobDesc }
+)
+      const rankResponse = await apiClient.post('/api/rank', {
         job_description_id: jdResponse.data.job_description_id,
         resume_ids: resumes.map(r => r.id)
       })

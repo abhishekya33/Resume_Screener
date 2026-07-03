@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import axios from 'axios'
+import apiClient from '../api/client'
 
-const API_BASE = 'http://localhost:8000'
 
 function ResumeUpload({ onUploadComplete }) {
   const [file, setFile] = useState(null)
@@ -21,9 +20,9 @@ function ResumeUpload({ onUploadComplete }) {
     formData.append('file', file)
     
     try {
-      const response = await axios.post(`${API_BASE}/api/upload-resume`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+      const response = await apiClient.post('/api/upload-resume', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+})
       
       setMessage(`✅ ${response.data.filename} uploaded successfully!`)
       setFile(null)
