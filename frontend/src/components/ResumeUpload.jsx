@@ -20,11 +20,12 @@ function ResumeUpload({ onUploadComplete }) {
         const formData = new FormData()
         formData.append('file', file)
 
-        await apiClient.post('/api/upload-resume', formData, {
+        const response = await apiClient.post('/api/upload-resume', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         })
+        console.log("UPLOAD RESPONSE:", response)
       }
 
       setMessage(`✅ ${files.length} resume(s) uploaded successfully!`)
@@ -44,6 +45,8 @@ function ResumeUpload({ onUploadComplete }) {
 
     } catch (error) {
       console.error(error)
+      console.error("RESPONSE:", error.response)
+      console.error("MESSAGE:", error.message)
 
       setMessage(
         `❌ Upload failed: ${

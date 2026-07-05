@@ -18,7 +18,8 @@ app = FastAPI(title="AI Resume Screener API", description="Smart resume screenin
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://resume-screener-theta-nine.vercel.app", 
+        "https://resume-screener-theta-nine.vercel.app",
+        "https://resume-screener-student127.vercel.app", 
         "http://localhost:5173"                 
     ],
     allow_credentials=True,
