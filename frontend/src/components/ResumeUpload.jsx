@@ -3,43 +3,43 @@ import apiClient from '../api/client'
 
 
 function ResumeUpload({ onUploadComplete }) {
-  const [file, setFile] = useState(null)
+  const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
 
   const handleUpload = async () => {
-    if (!file) {
-      setMessage('Please select a file')
-      return
-    }
-    
-    setUploading(true)
-    setMessage('')
-    
-    const formData = new FormData()
-    formData.append('file', file)
-    
-    try {
-      const response = await apiClient.post('/api/upload-resume', formData, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-})
-      
-      setMessage(`✅ ${response.data.filename} uploaded successfully!`)
-      setFile(null)
-      
-      const fileInput = document.getElementById('resume-input')
-      if (fileInput) fileInput.value = ''
-      
-      if (onUploadComplete) onUploadComplete()
-      
-      setTimeout(() => setMessage(''), 3000)
-    } catch (error) {
-      console.error('Upload failed:', error)
-      setMessage(`❌ Upload failed: ${error.response?.data?.detail || error.message}`)
-    } finally {
-      setUploading(false)
-    }
+  if (files.length === 0) {
+    setMessage("Please select files")
+    return
   }
+
+  setUploading(true)
+
+  try {
+    for (const file of files) {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      await apiClient.post("/api/upload-resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+    }
+
+    setMessage(`✅ ${files.length} resumes uploaded successfully!`)
+    setFiles([])
+
+    if (onUploadComplete) onUploadComplete()
+
+  } catch (error) {
+    setMessage("Upload failed")
+  }
+
+  setUploading(false)
+}
+  
+
 
   return (
     <div style={{
@@ -55,7 +55,8 @@ function ResumeUpload({ onUploadComplete }) {
         id="resume-input"
         type="file"
         accept=".pdf,.docx"
-        onChange={(e) => setFile(e.target.files[0])}
+        multiple
+        onChange={(e) => setFiles(Array.from(e.target.files))}
         style={{
           display: 'block',
           marginBottom: '16px',
@@ -68,7 +69,7 @@ function ResumeUpload({ onUploadComplete }) {
       
       <button
         onClick={handleUpload}
-        disabled={!file || uploading}
+        disabled={files.length === 0 || uploading}
         style={{
           background: '#667eea',
           color: 'white',
